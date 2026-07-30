@@ -1175,40 +1175,29 @@
             exportScope = null;
             render();
         }
-        function showCustomPrompt(message, defaultValue, callback) {
-            const modal = document.getElementById('customPromptModal');
-            const textEl = document.getElementById('customPromptText');
-            const inputEl = document.getElementById('customPromptInput');
-            const okBtn = document.getElementById('customPromptOk');
-            const cancelBtn = document.getElementById('customPromptCancel');
+        function showCustomPrompt(msg, def, cb) {
+    const modal = document.getElementById('customPromptModal');
+    const textEl = document.getElementById('customPromptText');
+    const inputEl = document.getElementById('customPromptInput');
+    const okBtn = document.getElementById('customPromptOk');
+    const cancelBtn = document.getElementById('customPromptCancel');
+    
+    textEl.innerText = msg;
+    inputEl.value = def || '';
+    modal.style.display = 'flex';
+    inputEl.focus();
 
-            textEl.innerText = message;
-            inputEl.value = defaultValue || '';
-            modal.style.display = 'flex';
-            inputEl.focus();
+    okBtn.onclick = function() {
+        modal.style.display = 'none';
+        if(cb) cb(inputEl.value);
+    };
+    cancelBtn.onclick = function() {
+        modal.style.display = 'none';
+        if(cb) cb(null);
+    };
+}
 
-            const handleOk = function() {
-                const val = inputEl.value;
-                cleanup();
-                callback(val);
-            };
-
-            const handleCancel = function() {
-                cleanup();
-                callback(null);
-            };
-
-            const cleanup = function() {
-                modal.style.display = 'none';
-                okBtn.removeEventListener('click', handleOk);
-                cancelBtn.removeEventListener('click', handleCancel);
-            };
-
-            okBtn.addEventListener('click', handleOk);
-            cancelBtn.addEventListener('click', handleCancel);
-        }
-        
-
+    
         initApp();
 
         if ("serviceWorker" in navigator) {
