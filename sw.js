@@ -1,4 +1,4 @@
-const CACHE_NAME = "order-tracker-v1";
+const CACHE_NAME = "order-tracker-v2"; // غيّر الرقم مع كل نشر جديد
 const SHELL_FILES = [
   "./",
   "./index.html",
@@ -10,7 +10,13 @@ const SHELL_FILES = [
 self.addEventListener("install", function(event) {
   event.waitUntil(
     caches.open(CACHE_NAME).then(function(cache) {
-      return cache.addAll(SHELL_FILES);
+      return Promise.all(
+        SHELL_FILES.map(function(url) {
+          return fetch(url, { cache: "reload" }).then(function(response) {
+            return cache.put(url, response);
+          });
+        })
+      );
     })
   );
   self.skipWaiting();
@@ -26,6 +32,8 @@ self.addEventListener("activate", function(event) {
           return caches.delete(key);
         })
       );
+    }).then(function() {
+      return self.clients.claim(); // ← الإضافة المهمة
     })
   );
 });
